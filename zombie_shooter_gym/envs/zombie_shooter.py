@@ -30,7 +30,26 @@ class ZombieShooter(gym.Env):
         "render_fps": 60,
     }
 
-    def __init__(self, window_width=800, window_height=600, world_height=3000, world_width=3000, fps=60, sound=False, render_mode="human"):
+    def __init__(self, window_width=800, window_height=600, world_height=3000, world_width=3000, fps=60, sound=False, render_mode="human", auto_scale=True):
+
+        # Auto-scale for high-DPI displays
+        if auto_scale and render_mode == "human":
+            try:
+                # Initialize pygame video to get display info
+                pygame.init()
+                display_info = pygame.display.Info()
+                screen_width = display_info.current_w
+                screen_height = display_info.current_h
+
+                # Use 70% of screen height for comfortable viewing
+                if screen_height > 1200:  # High-DPI display
+                    scale_factor = int(screen_height * 0.7 / window_height)
+                    window_width = window_width * scale_factor
+                    window_height = window_height * scale_factor
+                    print(f"Auto-scaled to {window_width}x{window_height} for {screen_width}x{screen_height} display")
+            except Exception as e:
+                # Fall back to default size if auto-detection fails
+                print(f"Auto-scaling failed, using default size: {e}")
 
         self.window_width = window_width
         self.window_height = window_height

@@ -35,7 +35,7 @@ pip install -e ".[rl]"
 ### PyPI Installation (Coming Soon)
 
 ```bash
-pip install zombie-shooter-gym
+pip install gym-zombie-shooter
 ```
 
 *Note: Package will be published to PyPI in the future.*
@@ -189,9 +189,12 @@ flake8 zombie_shooter_gym/
 
 MIT License - see LICENSE file for details.
 
-## Credits
+## Authors & Contributors
 
-Original game implementation by Robert Cowher.
+**Author:** Robert Cowher
+
+**Contributors:**
+- Jason Mosley
 
 ## Contributing
 

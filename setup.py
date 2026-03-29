@@ -4,8 +4,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="zombie-shooter-gym",
-    version="0.1.0",
+    name="gym-zombie-shooter",
+    version="0.1.1",
     author="Robert Cowher",
     author_email="",
     description="A Gymnasium environment for a top-down zombie shooter game",

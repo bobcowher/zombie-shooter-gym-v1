@@ -4,7 +4,7 @@ from gymnasium.envs.registration import register
 
 from zombie_shooter_gym.envs.zombie_shooter import ZombieShooter
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 register(
     id="ZombieShooter-v1",

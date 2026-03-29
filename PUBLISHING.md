@@ -63,7 +63,7 @@ python -m build
 
 This creates:
 - `dist/zombie_shooter_gym-0.1.0-py3-none-any.whl` (wheel)
-- `dist/zombie-shooter-gym-0.1.0.tar.gz` (source)
+- `dist/gym-zombie-shooter-0.1.0.tar.gz` (source)
 
 ### Step 5: Check the Distribution
 
@@ -82,7 +82,7 @@ TestPyPI is a separate instance for testing. Always test here first!
 
 1. Go to https://test.pypi.org/manage/account/token/
 2. Click "Add API token"
-3. Name it (e.g., "zombie-shooter-gym-test")
+3. Name it (e.g., "gym-zombie-shooter-test")
 4. Copy the token (starts with `pypi-`)
 
 #### 6b. Upload to TestPyPI
@@ -111,7 +111,7 @@ conda create -n test-pypi python=3.12
 conda activate test-pypi
 
 # Install from TestPyPI
-pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ zombie-shooter-gym
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ gym-zombie-shooter
 
 # Test it works
 python -c "import zombie_shooter_gym; import gymnasium as gym; env = gym.make('ZombieShooter-v1'); print('TestPyPI package works!')"
@@ -127,7 +127,7 @@ Once TestPyPI installation works:
 
 1. Go to https://pypi.org/manage/account/token/
 2. Click "Add API token"
-3. Name it (e.g., "zombie-shooter-gym")
+3. Name it (e.g., "gym-zombie-shooter")
 4. Copy the token
 
 #### 7b. Upload to PyPI
@@ -150,13 +150,13 @@ password = pypi-YOUR_PYPI_TOKEN_HERE
 
 #### 7c. Verify on PyPI
 
-1. Visit: https://pypi.org/project/zombie-shooter-gym/
+1. Visit: https://pypi.org/project/gym-zombie-shooter/
 2. Check the page looks correct
 3. Test installation:
 
 ```bash
 # In a fresh environment
-pip install zombie-shooter-gym
+pip install gym-zombie-shooter
 ```
 
 ### Step 8: Test the Public Installation
@@ -167,13 +167,13 @@ conda create -n test-prod python=3.12
 conda activate test-prod
 
 # Install from PyPI
-pip install zombie-shooter-gym
+pip install gym-zombie-shooter
 
 # Test it
 python -c "import zombie_shooter_gym; import gymnasium as gym; env = gym.make('ZombieShooter-v1'); print('Production package works!')"
 
 # Test examples
-pip install zombie-shooter-gym
+pip install gym-zombie-shooter
 # Download examples from GitHub or include them in your repo
 ```
 
@@ -252,10 +252,10 @@ twine upload --repository testpypi dist/*
 twine upload dist/*
 
 # Install from TestPyPI
-pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ zombie-shooter-gym
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ gym-zombie-shooter
 
 # Install from PyPI
-pip install zombie-shooter-gym
+pip install gym-zombie-shooter
 ```
 
 ## Next Release Workflow
