@@ -1,0 +1,209 @@
+# ===========================
+# Python
+# ===========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pyo
+*.pyd
+
+# C extensions
+*.so
+
+# ===========================
+# Package Distribution
+# ===========================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# ===========================
+# Virtual Environments
+# ===========================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+.conda/
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# ===========================
+# Testing & Coverage
+# ===========================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.log
+.hypothesis/
+
+# ===========================
+# ML / RL Specific
+# ===========================
+# Model checkpoints
+models/
+*.pt
+*.pth
+*.h5
+*.pkl
+*.ckpt
+*.pb
+*.onnx
+*.tflite
+
+# Training runs & logs
+runs/
+logs/
+tensorboard/
+wandb/
+*.log
+
+# Data files
+data/
+datasets/
+*.dat
+*.npy
+*.npz
+
+# Project-specific
+runpod_models/
+scratch.py
+temp/
+tmp/
+
+# ===========================
+# IDEs & Editors
+# ===========================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# Spyder
+.spyderproject
+.spyproject
+
+# ===========================
+# OS Files
+# ===========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+.Trash-*
+.nfs*
+
+# ===========================
+# Documentation
+# ===========================
+docs/_build/
+docs/_static/
+docs/_templates/
+site/
+
+# Sphinx
+_build/
+_static/
+_templates/
+
+# ===========================
+# Database
+# ===========================
+*.db
+*.sqlite
+*.sqlite3
+
+# ===========================
+# Secrets & Config
+# ===========================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secret.yaml
+secrets.yaml
+credentials.json
+config.local.*
+
+# ===========================
+# Misc
+# ===========================
+*.bak
+*.orig
+*.tmp
+.cache/
+*.pid
+*.seed
+*.pid.lock
