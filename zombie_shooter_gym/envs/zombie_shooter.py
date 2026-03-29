@@ -70,6 +70,7 @@ class ZombieShooter(gym.Env):
         self.paused = False  # Game starts unpaused
 
         self.fire_mode = "single"  # Add this to __init__
+        self.controls_shown = False  # Track if controls screen has been shown
 
         pygame.init()
         self.screen = pygame.display.set_mode((window_width, window_height))
@@ -141,6 +142,39 @@ class ZombieShooter(gym.Env):
         self.zombies = []
 
         return self._get_obs(), self._get_info()
+
+    def display_controls_screen(self):
+        """Display a controls instruction screen for 3 seconds."""
+        self.screen.fill(self.background_color)
+
+        # Title
+        title_surface = self.announcement_font.render('CONTROLS', True, (255, 255, 255))
+        title_rect = title_surface.get_rect(center=(self.window_width // 2, self.window_height // 4))
+        self.screen.blit(title_surface, title_rect)
+
+        # Control instructions
+        controls = [
+            "W/A/S/D - Move Up/Left/Down/Right",
+            "SPACE - Fire Weapon",
+            "TAB - Switch Gun (Single/Shotgun)",
+            "ESC - Pause Game"
+        ]
+
+        y_offset = self.window_height // 2 - 60
+        for control in controls:
+            control_surface = self.font.render(control, True, (255, 255, 255))
+            control_rect = control_surface.get_rect(center=(self.window_width // 2, y_offset))
+            self.screen.blit(control_surface, control_rect)
+            y_offset += 40
+
+        # Footer
+        footer_surface = self.font.render('Game starting...', True, (200, 200, 200))
+        footer_rect = footer_surface.get_rect(center=(self.window_width // 2, self.window_height - 100))
+        self.screen.blit(footer_surface, footer_rect)
+
+        pygame.display.flip()
+        pygame.time.wait(3000)  # Wait 3 seconds
+        self.controls_shown = True
 
     def toggle_pause(self):
 
@@ -351,6 +385,10 @@ class ZombieShooter(gym.Env):
             # [up, down, left, right, switch gun, fire]
             # [W, S, A, D, TAB, SPACE]
 
+            # Show controls screen on first step for human players
+            if self.human and not self.controls_shown:
+                self.display_controls_screen()
+
             self.total_frames += 1
 
             # for i in action:
@@ -365,8 +403,7 @@ class ZombieShooter(gym.Env):
             down = True if action == 2 else False
             left = True if action == 3 else False
             right = True if action == 4 else False
-            # switch_gun = True if action == 5 else False
-            switch_gun = False
+            switch_gun = True if (action == 5 and self.human) else False
             fire = True if action == 6 else False
             pause = False
 
