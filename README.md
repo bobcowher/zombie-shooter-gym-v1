@@ -100,17 +100,17 @@ python examples/human_play.py
   - `2`: Move down
   - `3`: Move left
   - `4`: Move right
-  - `5`: Shoot
-  - `6`: Switch weapon
+  - `5`: Switch weapon (only works if `use_shotgun=True`)
+  - `6`: Shoot
 
 ### Rewards
 
-- **+50**: Kill a zombie
-- **+25**: Open treasure chest (gain shotgun ammo)
-- **+10**: Collect health drop
-- **-10**: Take damage from zombie
-- **+100**: Complete level
-- **-100**: Die (game over)
+- **+1**: Kill a zombie
+- **+1**: Open treasure chest (gain shotgun ammo)
+- **+1**: Collect health drop (restores +1 HP)
+- **-1**: Take damage from zombie (lose 1 HP)
+
+Note: Episodes end when the player dies (health reaches 0) or completes a level, but there are no additional rewards/penalties for these events beyond the cumulative rewards earned during play.
 
 ### Episode Termination
 
@@ -119,12 +119,41 @@ python examples/human_play.py
 
 ### Game Mechanics
 
-- **Health**: Start with 100 HP, lose health from zombie bites
+- **Health**: Start with 5 HP, lose 1 HP from zombie bites. Health drops restore +1 HP (capped at 100 max).
 - **Weapons**:
-  - Pistol: Infinite ammo, single shot
-  - Shotgun: Limited ammo (collect from chests), 3-way spread shot
+  - Pistol (Single): Infinite ammo, single shot (default for AI)
+  - Shotgun: Limited ammo (collect from chests), 3-way spread shot (switchable in human mode)
 - **Enemies**: Zombies spawn periodically and pursue the player
 - **Levels**: 3 levels with increasing difficulty (more zombies, complex layouts)
+
+### Environment Parameters
+
+When creating the environment with `gym.make()`, you can customize behavior with these parameters:
+
+```python
+env = gym.make('ZombieShooter-v1',
+    render_mode='human',      # 'human' or 'rgb_array'
+    window_width=800,          # Base viewport width
+    window_height=600,         # Base viewport height
+    world_width=3000,          # Game world width
+    world_height=3000,         # Game world height
+    fps=60,                    # Frame rate
+    sound=True,                # Enable/disable sound (only in human mode)
+    auto_scale=True,           # Auto-scale window for high-DPI displays
+    use_shotgun=None           # Enable weapon switching (None=auto based on render_mode)
+)
+```
+
+**Key Parameters:**
+- **`use_shotgun`**: Controls whether gun switching is enabled (action 5)
+  - `None` (default): Auto-enables for human mode, disables for AI
+  - `True`: Enable weapon switching
+  - `False`: Disable weapon switching (AI always uses pistol)
+
+- **`auto_scale`**: Automatically scales window for 4K/high-DPI displays
+  - Keeps viewport constant (same visible game area)
+  - Scales rendering for better visual quality on large screens
+  - Uses 70% of screen height on displays >1200px tall
 
 ## Training with Reinforcement Learning
 

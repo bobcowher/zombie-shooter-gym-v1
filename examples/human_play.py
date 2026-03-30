@@ -50,7 +50,7 @@ def main():
         # 2: Move down (S)
         # 3: Move left (A)
         # 4: Move right (D)
-        # 5: Switch weapon (TAB)
+        # 5: Switch weapon (TAB) - only if use_shotgun=True
         # 6: Shoot (SPACE)
         action = 0
 
@@ -60,10 +60,10 @@ def main():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_TAB:
-                    action = 5  # Switch weapon
-                elif event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE:
                     action = 6  # Shoot
+                elif event.key == pygame.K_TAB:
+                    action = 5  # Switch weapon (if enabled)
                 elif event.key == pygame.K_ESCAPE:
                     env.unwrapped.toggle_pause()
 

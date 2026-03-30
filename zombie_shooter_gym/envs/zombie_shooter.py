@@ -30,7 +30,16 @@ class ZombieShooter(gym.Env):
         "render_fps": 60,
     }
 
-    def __init__(self, window_width=800, window_height=600, world_height=3000, world_width=3000, fps=60, sound=False, render_mode="human", auto_scale=True):
+    def __init__(self, window_width=800, window_height=600, world_height=3000, world_width=3000, fps=60, sound=False, render_mode="human", auto_scale=True, use_shotgun=None):
+
+        # Store base rendering resolution (viewport size)
+        self.base_width = window_width
+        self.base_height = window_height
+
+        # Physical window size (may be scaled for high-DPI)
+        self.physical_width = window_width
+        self.physical_height = window_height
+        self.scale_factor = 1.0
 
         # Auto-scale for high-DPI displays
         if auto_scale and render_mode == "human":
@@ -43,16 +52,19 @@ class ZombieShooter(gym.Env):
 
                 # Use 70% of screen height for comfortable viewing
                 if screen_height > 1200:  # High-DPI display
-                    scale_factor = int(screen_height * 0.7 / window_height)
-                    window_width = window_width * scale_factor
-                    window_height = window_height * scale_factor
-                    print(f"Auto-scaled to {window_width}x{window_height} for {screen_width}x{screen_height} display")
+                    target_height = int(screen_height * 0.7)
+                    self.scale_factor = target_height / window_height
+                    self.physical_width = int(window_width * self.scale_factor)
+                    self.physical_height = target_height
+                    print(f"Auto-scaled window to {self.physical_width}x{self.physical_height} (scale: {self.scale_factor:.2f}x)")
+                    print(f"Game viewport remains {self.base_width}x{self.base_height}")
             except Exception as e:
                 # Fall back to default size if auto-detection fails
                 print(f"Auto-scaling failed, using default size: {e}")
 
-        self.window_width = window_width
-        self.window_height = window_height
+        # Use base dimensions for all game logic
+        self.window_width = self.base_width
+        self.window_height = self.base_height
         self.world_height = world_height
         self.world_width = world_width
 
@@ -64,16 +76,26 @@ class ZombieShooter(gym.Env):
             self.sound = False
             os.environ["SDL_VIDEODRIVER"] = "dummy" # Set dummy video driver to null route display
 
+        # Set use_shotgun default based on render_mode if not explicitly provided
+        if use_shotgun is None:
+            self.use_shotgun = (render_mode == "human")
+        else:
+            self.use_shotgun = use_shotgun
+
         self.treasure_chest = None  # No chest initially
         self.health_drop = None  # No health drop initially
 
         self.paused = False  # Game starts unpaused
 
         self.fire_mode = "single"  # Add this to __init__
-        self.controls_shown = False  # Track if controls screen has been shown
 
         pygame.init()
-        self.screen = pygame.display.set_mode((window_width, window_height))
+
+        # Create physical window at scaled size
+        self.display = pygame.display.set_mode((self.physical_width, self.physical_height))
+
+        # Create virtual surface at base resolution for rendering
+        self.screen = pygame.Surface((self.base_width, self.base_height))
 
         pygame.display.set_caption('Zombie Shooter')
 
@@ -121,6 +143,17 @@ class ZombieShooter(gym.Env):
             self.vocals_1.play()
 
 
+    def _update_display(self):
+        """Scale virtual surface to physical display and update."""
+        if self.scale_factor > 1.0:
+            # Scale the virtual surface to the physical window
+            scaled_surface = pygame.transform.scale(self.screen, (self.physical_width, self.physical_height))
+            self.display.blit(scaled_surface, (0, 0))
+        else:
+            # No scaling needed, blit directly
+            self.display.blit(self.screen, (0, 0))
+        pygame.display.flip()
+
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         self.done = False
@@ -143,39 +176,6 @@ class ZombieShooter(gym.Env):
 
         return self._get_obs(), self._get_info()
 
-    def display_controls_screen(self):
-        """Display a controls instruction screen for 3 seconds."""
-        self.screen.fill(self.background_color)
-
-        # Title
-        title_surface = self.announcement_font.render('CONTROLS', True, (255, 255, 255))
-        title_rect = title_surface.get_rect(center=(self.window_width // 2, self.window_height // 4))
-        self.screen.blit(title_surface, title_rect)
-
-        # Control instructions
-        controls = [
-            "W/A/S/D - Move Up/Left/Down/Right",
-            "SPACE - Fire Weapon",
-            "TAB - Switch Gun (Single/Shotgun)",
-            "ESC - Pause Game"
-        ]
-
-        y_offset = self.window_height // 2 - 60
-        for control in controls:
-            control_surface = self.font.render(control, True, (255, 255, 255))
-            control_rect = control_surface.get_rect(center=(self.window_width // 2, y_offset))
-            self.screen.blit(control_surface, control_rect)
-            y_offset += 40
-
-        # Footer
-        footer_surface = self.font.render('Game starting...', True, (200, 200, 200))
-        footer_rect = footer_surface.get_rect(center=(self.window_width // 2, self.window_height - 100))
-        self.screen.blit(footer_surface, footer_rect)
-
-        pygame.display.flip()
-        pygame.time.wait(3000)  # Wait 3 seconds
-        self.controls_shown = True
-
     def toggle_pause(self):
 
         self.paused = not self.paused  # Toggle between paused and unpaused
@@ -184,7 +184,7 @@ class ZombieShooter(gym.Env):
             pause_surface = self.announcement_font.render('Game Paused', True, (255, 255, 255))  # White text
             pause_rect = pause_surface.get_rect(center=(self.window_width // 2, self.window_height // 2))
             self.screen.blit(pause_surface, pause_rect)
-            pygame.display.flip()  # Update display to show pause message
+            self._update_display()  # Update display to show pause message
 
             # Wait until the player unpauses (ignore everything else)
             while self.paused:
@@ -238,7 +238,7 @@ class ZombieShooter(gym.Env):
 
         self.player = Player(world_height=self.world_height, world_width=self.world_width, walls=self.walls)
 
-        pygame.display.flip()
+        self._update_display()
         pygame.time.wait(4000)
 
         if self.level > 3:
@@ -257,7 +257,7 @@ class ZombieShooter(gym.Env):
         self.screen.blit(game_over_surface, game_over_rect)
 
         # Update the display to show the message
-        pygame.display.flip()
+        self._update_display()
 
         self.done = True
 
@@ -285,19 +285,21 @@ class ZombieShooter(gym.Env):
         level_surface = self.font.render(f'Level: {self.level}', True, (0, 0, 0))
         self.screen.blit(level_surface, (10, 60))
 
-        ammo_surface = self.font.render(f'Shotgun Ammo: {self.shotgun_ammo}', True, (0, 0, 0))
-        self.screen.blit(ammo_surface, (10, 85))
+        # Only show gun info if shotgun switching is enabled
+        if self.use_shotgun:
+            ammo_surface = self.font.render(f'Shotgun Ammo: {self.shotgun_ammo}', True, (0, 0, 0))
+            self.screen.blit(ammo_surface, (10, 85))
 
-        gun_type_surface = self.font.render(f'Gun: {self.gun_type.title()}', True, (0, 0, 0))
-        self.screen.blit(gun_type_surface, (10, 110))
+            gun_type_surface = self.font.render(f'Gun: {self.gun_type.title()}', True, (0, 0, 0))
+            self.screen.blit(gun_type_surface, (10, 110))
 
-        # Display out of ammo message if needed
-        if self.out_of_ammo_message_displayed and self.gun_type == "shotgun":
-            out_of_ammo_surface = self.font.render(
-                "Out of shotgun ammo! Press TAB to switch to single shot.", True, (255, 0, 0)
-            )
-            out_of_ammo_rect = out_of_ammo_surface.get_rect(center=(self.window_width // 2, self.window_height // 2))
-            self.screen.blit(out_of_ammo_surface, out_of_ammo_rect)
+            # Display out of ammo message if needed
+            if self.out_of_ammo_message_displayed and self.gun_type == "shotgun":
+                out_of_ammo_surface = self.font.render(
+                    "Out of shotgun ammo! Press TAB to switch to single shot.", True, (255, 0, 0)
+                )
+                out_of_ammo_rect = out_of_ammo_surface.get_rect(center=(self.window_width // 2, self.window_height // 2))
+                self.screen.blit(out_of_ammo_surface, out_of_ammo_rect)
 
     def fire_single_bullet(self):
         bullet = SingleBullet(self.player.x, self.player.y, self.player.direction)
@@ -385,10 +387,6 @@ class ZombieShooter(gym.Env):
             # [up, down, left, right, switch gun, fire]
             # [W, S, A, D, TAB, SPACE]
 
-            # Show controls screen on first step for human players
-            if self.human and not self.controls_shown:
-                self.display_controls_screen()
-
             self.total_frames += 1
 
             # for i in action:
@@ -403,7 +401,7 @@ class ZombieShooter(gym.Env):
             down = True if action == 2 else False
             left = True if action == 3 else False
             right = True if action == 4 else False
-            switch_gun = True if (action == 5 and self.human) else False
+            switch_gun = True if (action == 5 and self.use_shotgun) else False
             fire = True if action == 6 else False
             pause = False
 
@@ -576,9 +574,9 @@ class ZombieShooter(gym.Env):
 
             # Update the display
             if self.human:
-                pygame.display.flip()
+                self._update_display()
             elif self.total_frames % 2 == 0:
-                pygame.display.flip()
+                self._update_display()
 
             if self.player.health <= 0:
                 self.game_over()
