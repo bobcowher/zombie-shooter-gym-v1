@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="gym-zombie-shooter",
-    version="0.1.2",
+    version="0.1.0",
     author="Robert Cowher",
     author_email="",
     description="A Gymnasium environment for a top-down zombie shooter game",
