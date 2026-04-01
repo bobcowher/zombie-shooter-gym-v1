@@ -206,4 +206,7 @@ config.local.*
 .cache/
 *.pid
 *.seed
-*.pid.lock.claude/
+*.pid.lock
+
+# Claude Code
+.claude/

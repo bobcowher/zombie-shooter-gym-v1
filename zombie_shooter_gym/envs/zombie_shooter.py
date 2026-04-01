@@ -76,11 +76,8 @@ class ZombieShooter(gym.Env):
             self.sound = False
             os.environ["SDL_VIDEODRIVER"] = "dummy" # Set dummy video driver to null route display
 
-        # Set use_shotgun default based on render_mode if not explicitly provided
-        if use_shotgun is None:
-            self.use_shotgun = (render_mode == "human")
-        else:
-            self.use_shotgun = use_shotgun
+        # Set use_shotgun - defaults to False if not explicitly provided
+        self.use_shotgun = use_shotgun if use_shotgun is not None else False
 
         self.treasure_chest = None  # No chest initially
         self.health_drop = None  # No health drop initially

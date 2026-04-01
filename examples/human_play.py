@@ -19,7 +19,7 @@ def main():
     WORLD_WIDTH, WORLD_HEIGHT = 1800, 1200
     FPS = 60
 
-    # Create the environment with human rendering and sound enabled
+    # Create the environment with human rendering, sound, and shotgun enabled
     env = gym.make(
         'ZombieShooter-v1',
         window_width=WINDOW_WIDTH,
@@ -28,7 +28,8 @@ def main():
         world_height=WORLD_HEIGHT,
         fps=FPS,
         sound=True,
-        render_mode="human"
+        render_mode="human",
+        use_shotgun=True
     )
 
     print("Starting Zombie Shooter - Human Play Mode")

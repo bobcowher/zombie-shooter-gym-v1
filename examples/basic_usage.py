@@ -16,8 +16,8 @@ def main():
     print("  2: Move down")
     print("  3: Move left")
     print("  4: Move right")
-    print("  5: Shoot")
-    print("  6: Switch weapon")
+    print("  5: Switch weapon (requires use_shotgun=True)")
+    print("  6: Shoot")
 
     # Reset environment
     observation, info = env.reset()
